@@ -4,13 +4,13 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 # Load the employee dataset
-df = pd.read_csv("G:\Employee_Burnout_Analysis\\employeedataset.csv")
+df = pd.read_csv("G:\\Employee_Burnout_Analysis\\employeedataset.csv")
 
 # Binning 'Burn Rate' into discrete categories (e.g., Low, Moderate, High)
 def categorize_burn_rate(burn_rate):
@@ -61,6 +61,10 @@ rf_predictions = rf_classifier.predict(X_test)
 svm_classifier = SVC(kernel='linear', C=1.0, random_state=42)
 svm_classifier.fit(X_train, y_train)
 svm_predictions = svm_classifier.predict(X_test)
+
+# Linear Regression for Resource Allocation and Burn Rate
+regressor = LinearRegression()
+regressor.fit(df[['Resource Allocation']], df['Burn Rate'])
 
 # Evaluate the models
 print("Logistic Regression Results:")
@@ -136,6 +140,14 @@ plt.title('Mental Fatigue Score by Gender')
 plt.subplot(2, 3, 6)
 sns.boxplot(x='Gender', y='Burn Rate', data=df, palette='coolwarm')
 plt.title('Burn Rate by Gender')
+
+# Plot Linear Regression for Resource Allocation and Burn Rate
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='Resource Allocation', y='Burn Rate', data=df, color='purple')
+sns.lineplot(x=df['Resource Allocation'], y=regressor.predict(df[['Resource Allocation']]), color='orange')
+plt.title('Linear Regression: Resource Allocation vs. Burn Rate')
+plt.xlabel('Resource Allocation')
+plt.ylabel('Burn Rate')
 
 plt.tight_layout()
 plt.show()
